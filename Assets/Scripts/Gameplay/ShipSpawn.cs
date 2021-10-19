@@ -9,6 +9,8 @@ namespace NavalBattle.Gameplay
     ///</summary>
     public class ShipSpawn : MonoBehaviour
     {
+        #region Private Variables
+
         ///<summary>
         ///Точка респауна слева
         ///</summary>
@@ -29,6 +31,10 @@ namespace NavalBattle.Gameplay
         ///Список кораблей справа
         ///</summary>
         private List<GameObject> _shipsRight = new List<GameObject>();
+
+        #endregion
+
+        #region MonoBehavior
         
         void Start() 
         {
@@ -54,5 +60,7 @@ namespace NavalBattle.Gameplay
                 ship.transform.position = new Vector2(randomPositionX, randomPositionY);
             }  
         }  
+
+        #endregion
     }
 }

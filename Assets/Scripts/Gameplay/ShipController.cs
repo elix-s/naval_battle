@@ -12,10 +12,36 @@ namespace NavalBattle.Gameplay
     ///</summary>
     public class ShipController : MonoBehaviour
     {
+        #region Private Variables
+
         private Vector2 _startPosition;
         private Animator _animator;
         private float _speed;
         private bool _shipCollision;
+
+        #endregion
+
+        #region Private Methods
+
+        ///<summary>
+        ///Действия при взрыве
+        ///</summary>
+        private IEnumerator Damage()
+        {
+            _animator.SetFloat("Damage", 0.01f);
+            SoundManager.Instance.PlaySound("Explosion57", 0.4F);
+
+            if(_shipCollision == false)
+            {
+                ShipDestroyedCounter counter = FindObjectOfType<ShipDestroyedCounter>();
+                GameObject counterText = counter.gameObject;
+                counterText.GetComponent<ShipDestroyedCounter>().Counter();
+            }
+
+            yield return new WaitForSecondsRealtime(0.5f);
+            Respown();
+            _animator.SetFloat("Damage", 0.0f);
+        }
 
         ///<summary>
         ///Респаун в рандомную точку
@@ -27,6 +53,10 @@ namespace NavalBattle.Gameplay
             else
                 transform.position = new Vector2(Random.Range(GameSettings.Data.BorderLeft, _startPosition.x), Mathf.Round(Random.Range(GameSettings.Data.BorderTop, GameSettings.Data.BorderBottom))); 
         }
+
+        #endregion
+
+        #region Unity Events
 
         void OnBecameInvisible()
         {
@@ -47,31 +77,9 @@ namespace NavalBattle.Gameplay
             }      
         }
 
-        ///<summary>
-        ///Действия при взрыве
-        ///</summary>
-        private IEnumerator Damage()
-        {
-            _animator.SetFloat("Damage", 0.01f);
-            SoundManager.Instance.PlaySound("Explosion57", 0.4F);
+        #endregion
 
-            if(_shipCollision == false)
-            {
-                ShipDestroyedCounter counter = FindObjectOfType<ShipDestroyedCounter>();
-                GameObject counterText = counter.gameObject;
-                counterText.GetComponent<ShipDestroyedCounter>().Counter();
-            }
-
-            yield return new WaitForSecondsRealtime(0.5f);
-            Respown();
-            _animator.SetFloat("Damage", 0.0f);
-
-        }
-
-        void FixedUpdate()
-        {
-            transform.Translate(Vector3.right * Time.deltaTime * _speed, Space.World);
-        }
+        #region MonoBehavior
 
         void Start() {
             _animator = GetComponent<Animator>();
@@ -81,6 +89,13 @@ namespace NavalBattle.Gameplay
                 _speed = -GameSettings.Data.ShipSpeed;
             else
                 _speed = GameSettings.Data.ShipSpeed;
+        }
+
+        void FixedUpdate()
+        {
+            transform.Translate(Vector3.right * Time.deltaTime * _speed, Space.World);
         }  
+
+        #endregion
     }
 }
